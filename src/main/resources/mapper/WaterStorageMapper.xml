@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.veyit.waterstoragesystem.mapper.WaterStorageMapper">
+    <resultMap id="getWsInfoVO" type="WsInfoVO">
+        <id property="xsId" column="xs_id"/>
+        <result property="size" column="size"/>
+        <result property="shape" column="shape"/>
+        <result property="position" column="position"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="status" column="status"/>
+        <result property="isReview" column="is_review"/>
+        <result property="reviewSituation" column="review_situation"/>
+        <association property="statusReason" javaType="StatusReason" resultMap="getStatusReason">
+        </association>
+    </resultMap>
+    <resultMap id="getStatusReason" type="StatusReason">
+        <id property="statusId" column="status_id"/>
+        <result property="wsId" column="ws_id"/>
+        <result property="wsStatus" column="ws_status"/>
+        <result property="reason" column="reason"/>
+    </resultMap>
+
+    <select id="selectInfos" resultMap="getWsInfoVO">
+        select * from ws_info as t1
+                                left join status_reason as t2
+                                    on t1.xs_id=t2.ws_id
+    </select>
+
+    <select id="selectXsInfos" resultMap="getWsInfoVO">
+        select * from ws_info as t1
+                          left join status_reason as t2
+                                    on t1.xs_id=t2.ws_id
+        where t1.status > 0
+    </select>
+    <select id="selectInfoByNum" resultMap="getWsInfoVO">
+        select * from ws_info as t1
+                          left join status_reason as t2
+                                    on t1.xs_id=t2.ws_id
+        where t1.xs_id=#{number}
+    </select>
+    <select id="selectWsInfos" resultType="WsInfo">
+        select * from ws_info
+    </select>
+    <select id="selectInfosByStatus" resultMap="getWsInfoVO">
+        select * from ws_info as t1
+                          left join status_reason as t2
+                                    on t1.xs_id=t2.ws_id
+        where t1.status=#{status}
+    </select>
+    <select id="selectInfoByXsId" resultType="WsInfo">
+        select * from ws_info where xs_id=#{xsId}
+    </select>
+
+    <insert id="addWaterInfo" useGeneratedKeys="true" keyProperty="xsId">
+        insert into ws_info(size,longitude,latitude,shape,status,is_review,review_situation,position)
+                    values(#{size},#{longitude},#{latitude},#{shape},#{status},#{isReview},#{reviewSituation},#{position})
+    </insert>
+
+    <insert id="addStatusReason">
+        insert into status_reason(ws_id,ws_status,reason) values(#{wsId},#{wsStatus},#{reason})
+    </insert>
+
+    <update id="updateInfoByXsId">
+        update ws_info set size=#{size},position=#{position},longitude=#{longitude},latitude=#{latitude},shape=#{shape},status=#{status},is_review=#{isReview},review_situation=#{reviewSituation}
+                    where xs_id=#{xsId}
+    </update>
+    <update id="updateStatus">
+        update status_reason set reason=#{reason},ws_status=#{wsStatus} where ws_id=#{wsId}
+    </update>
+
+    <delete id="deleteInfoByXsId">
+        delete t1,t2 from ws_info as t1
+                     left join status_reason as t2
+                          on t1.xs_id=t2.ws_id
+        where t1.xs_id=#{xsId}
+    </delete>
+</mapper>

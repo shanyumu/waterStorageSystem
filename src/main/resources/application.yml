@@ -1,0 +1,23 @@
+#端口
+server:
+  port: 2323
+  servlet:
+    context-path: /xs
+#数据库配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/waterstorage?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: '@Weensla123'
+  #REDIS配置
+  redis:
+    port: 6379
+    host: localhost
+#mybatis
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.veyit.waterstoragesystem.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
